@@ -84,14 +84,19 @@ class GameOfLife {
     fun getNumLiveNeighbors(x: Int, y: Int) : Int {
         var numNeighbors = 0
         
-        for (xOffset in -1 until 1) {
-            for (yOffset in -1 until 1) {
+        for (xOffset in -1..1) {
+            for (yOffset in -1..1) {
                 val xDelta = x + xOffset
                 val yDelta = y + yOffset
+                
+                if(xDelta == x && yDelta == y) {
+                    continue
+                }
+                
                 if (xDelta > 0 &&
                         yDelta > 0 &&
-                        xDelta < (gridMap.grid.size * GridMap.TILE_SIZE) &&
-                        yDelta < (gridMap.grid[0].size * GridMap.TILE_SIZE) &&
+                        xDelta < gridMap.grid.size &&
+                        yDelta < gridMap.grid[0].size &&
                         gridMap.grid[xDelta][yDelta] == GridMap.ALIVE) {
                     numNeighbors++
                 }
