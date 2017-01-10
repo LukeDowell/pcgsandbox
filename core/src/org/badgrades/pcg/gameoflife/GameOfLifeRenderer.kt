@@ -1,10 +1,9 @@
-package org.badgrades.pcg.gameoflife.renderer
+package org.badgrades.pcg.gameoflife
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import org.badgrades.pcg.gameoflife.GridMap
 
 object GameOfLifeRenderer {
     
@@ -22,19 +21,15 @@ object GameOfLifeRenderer {
     }
     
     fun render(grid: Array<IntArray>) {
-        camera.update()
-        
         for(x in 0 until grid.size) {
             for(y in 0 until grid[0].size) {
-                
-                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
                 
                 when(grid[x][y]) {
                     0 -> shapeRenderer.color = Color.BLACK
                     else -> shapeRenderer.color = Color.WHITE
                 }
                 
-                
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
                 shapeRenderer.rect(
                         x * GridMap.TILE_SIZE,
                         y * GridMap.TILE_SIZE,

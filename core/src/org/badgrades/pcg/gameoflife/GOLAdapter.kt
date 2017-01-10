@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.GL30
-import org.badgrades.pcg.gameoflife.renderer.GameOfLifeRenderer
 
 class GOLAdapter : ApplicationAdapter() {
     
@@ -12,6 +11,7 @@ class GOLAdapter : ApplicationAdapter() {
         private set
     
     lateinit var gameOfLifeInputProcessor: InputProcessor
+        private set
     
     override fun create() {
         gameOfLife = GameOfLife()

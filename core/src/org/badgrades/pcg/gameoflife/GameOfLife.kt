@@ -86,13 +86,16 @@ class GameOfLife {
         
         for (xOffset in -1..1) {
             for (yOffset in -1..1) {
+                // These variable names are trash
                 val xDelta = x + xOffset
                 val yDelta = y + yOffset
                 
+                // If we are in the center of our square, skip and move on
                 if(xDelta == x && yDelta == y) {
                     continue
                 }
                 
+                // Make sure we are in the bounds of the map, and that the cell we are checking is alive
                 if (xDelta > 0 &&
                         yDelta > 0 &&
                         xDelta < gridMap.grid.size &&
