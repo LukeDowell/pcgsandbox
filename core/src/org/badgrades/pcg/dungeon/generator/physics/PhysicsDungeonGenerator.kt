@@ -19,9 +19,10 @@ class PhysicsDungeonGenerator : DungeonGenerator {
     var VELOCITY_ITERATIONS = 6
     var POSITION_ITERATIONS = 2
     
+    /** Box2d body properties */
     var BODY_DENSITY = 0.2f
     var BODY_FRICTION =  0f
-    var BODY_RESTITUTION = 0f
+    var BODY_RESTITUTION = 0f // How much it bounces ( ͡° ͜ʖ ͡°)
     
     /** The gravity vector for our box2d world. */
     var GRAVITY = Vector2(0f, 0f)
