@@ -14,16 +14,14 @@ object PhysicsDungeonRenderer {
     
     const val TILE_SIZE = 16f
     
-    val camera = OrthographicCamera()
+    val camera = OrthographicCamera(
+            Gdx.graphics.width.toFloat(),
+            Gdx.graphics.height.toFloat()
+    )
     val shapeRenderer = ShapeRenderer()
     val debugRenderer = Box2DDebugRenderer()
     
     init {
-        camera.setToOrtho(
-                true,
-                Gdx.graphics.width * TILE_SIZE,
-                Gdx.graphics.height * TILE_SIZE
-        )
         shapeRenderer.projectionMatrix = camera.combined
     }
     
