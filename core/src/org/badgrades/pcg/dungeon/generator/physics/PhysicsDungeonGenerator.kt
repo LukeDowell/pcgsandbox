@@ -1,10 +1,9 @@
 package org.badgrades.pcg.dungeon.generator.physics
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.BodyDef
-import com.badlogic.gdx.physics.box2d.FixtureDef
-import com.badlogic.gdx.physics.box2d.PolygonShape
-import com.badlogic.gdx.physics.box2d.World
+import com.badlogic.gdx.physics.box2d.*
+import com.badlogic.gdx.utils.Array
 import org.badgrades.pcg.dungeon.generator.DungeonGenerator
 import org.badgrades.pcg.dungeon.model.Dungeon
 import java.util.*
@@ -15,9 +14,14 @@ import java.util.*
 class PhysicsDungeonGenerator : DungeonGenerator {
     
     /** Box2d shit */
-    val TIME_STEP = 1/45f
+    var TIME_STEP = 1/45f
+    var SLEEP_CHECK_PERIOD = 2f
     var VELOCITY_ITERATIONS = 15
     var POSITION_ITERATIONS = 8
+    
+    var accumulator = 0f
+    var sleepAccumulator = 0f
+    
     
     /** Box2d body properties */
     var BODY_DENSITY = 0.2f
@@ -44,14 +48,14 @@ class PhysicsDungeonGenerator : DungeonGenerator {
     val world: World = World(GRAVITY, true)
     val dungeon: Dungeon = Dungeon()
     val random: Random = Random()
-    var accumulator = 0f
+    
     
     init {
         (1..NUM_BODIES).forEach {
-            // Create our body in the world using our body definition
+            // Create a body definition with a random position
             val body = world.createBody(createRectBodyDef())
     
-            // Create a circle shape and set its radius to 6
+            // Create a polygon shape with pseudo random dimensions
             val square = randomPolygonShape()
     
             // Create a fixture definition to apply our shape to
@@ -61,7 +65,7 @@ class PhysicsDungeonGenerator : DungeonGenerator {
             fixtureDef.friction = BODY_FRICTION
             fixtureDef.restitution = BODY_RESTITUTION
     
-            // Create our fixture and attach it to the body
+            // Attach our fixture to the body
             body.createFixture(fixtureDef)
     
             // Remember to dispose of any shapes after you're done with them!
@@ -76,10 +80,29 @@ class PhysicsDungeonGenerator : DungeonGenerator {
     
     fun update(delta: Float) {
         PhysicsDungeonRenderer.render(dungeon, world)
+        
+        // Update world
         accumulator += delta
         if(accumulator > TIME_STEP) {
             world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS)
             accumulator -= TIME_STEP
+        }
+        
+        // Check to see if all bodies are sleeping
+        sleepAccumulator += delta
+        if(sleepAccumulator > SLEEP_CHECK_PERIOD) {
+            val bodies: Array<Body> = Array()
+            world.getBodies(bodies)
+            val numBodiesAwake = bodies.filter { it.isAwake }.size
+            if(numBodiesAwake == 0) {
+                Gdx.app.log("GameOfLife", "All bodies are sleeping!")
+                // Convert to dungeon
+                
+                
+            } else {
+                Gdx.app.log("GameOfLife", "$numBodiesAwake bodies are still awake!")
+            }
+            sleepAccumulator -= SLEEP_CHECK_PERIOD
         }
     }
     
@@ -103,7 +126,7 @@ class PhysicsDungeonGenerator : DungeonGenerator {
         return shape
     }
     
-    fun randomPolygonSideLength() = random.nextInt((MAX_BOX_SIZE.toInt() - MIN_BOX_SIZE.toInt()) + 1) + MIN_BOX_SIZE // This is lol
+    fun randomPolygonSideLength() = random.nextInt((MAX_BOX_SIZE.toInt() - MIN_BOX_SIZE.toInt()) + 1) + MIN_BOX_SIZE
     
     fun randomSpawnPoint(): Vector2 {
         val angle = random.nextDouble() * Math.PI * 2
