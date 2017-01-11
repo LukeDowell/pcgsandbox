@@ -8,14 +8,14 @@ import com.badlogic.gdx.graphics.GL30
 class GOLAdapter : ApplicationAdapter() {
     
     lateinit var gameOfLife: GameOfLife
-        private set
-    
     lateinit var gameOfLifeInputProcessor: InputProcessor
-        private set
+    lateinit var gameOfLifeRenderer: GameOfLifeRenderer
     
     override fun create() {
         gameOfLife = GameOfLife()
         gameOfLifeInputProcessor = GOLInputHandler(gameOfLife)
+        gameOfLifeRenderer = GameOfLifeRenderer()
+        
         Gdx.input.inputProcessor = gameOfLifeInputProcessor
     }
     
@@ -24,6 +24,6 @@ class GOLAdapter : ApplicationAdapter() {
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT)
         
         gameOfLife.update(Gdx.graphics.deltaTime)
-        GameOfLifeRenderer.render(gameOfLife.gridMap.grid)
+        gameOfLifeRenderer.render(gameOfLife.gridMap.grid)
     }
 }

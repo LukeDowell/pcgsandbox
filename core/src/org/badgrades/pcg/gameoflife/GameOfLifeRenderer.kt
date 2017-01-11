@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 
-object GameOfLifeRenderer {
+class GameOfLifeRenderer {
     
     val camera = OrthographicCamera()
     val shapeRenderer = ShapeRenderer()
