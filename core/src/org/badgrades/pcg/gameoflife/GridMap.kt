@@ -2,7 +2,9 @@ package org.badgrades.pcg.gameoflife
 
 /**
  * The map array is wrapped so that later if we want our arrays to be
- * toroidal we can have it be so
+ * toroidal we can have it be so.
+ *
+ * It would be cool if we could say toroidal = true in the constructor of this class, but still
  */
 class GridMap(val width: Int, val height: Int) {
     

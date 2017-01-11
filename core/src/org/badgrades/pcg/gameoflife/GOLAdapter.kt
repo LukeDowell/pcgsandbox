@@ -9,12 +9,12 @@ class GOLAdapter : ApplicationAdapter() {
     
     lateinit var gameOfLife: GameOfLife
     lateinit var gameOfLifeInputProcessor: InputProcessor
-    lateinit var gameOfLifeRenderer: GameOfLifeRenderer
+    lateinit var gameOfLifeRenderer: GOLRenderer
     
     override fun create() {
         gameOfLife = GameOfLife()
         gameOfLifeInputProcessor = GOLInputHandler(gameOfLife)
-        gameOfLifeRenderer = GameOfLifeRenderer()
+        gameOfLifeRenderer = GOLRenderer()
         
         Gdx.input.inputProcessor = gameOfLifeInputProcessor
     }

@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<!-- saved from url=(0099)http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">	
+		<title>Gamasutra: A Adonaac's Blog - Procedural Dungeon Generation Algorithm</title>
+	<meta name="pagecaching" content="681">
+	<meta name="serveraddress" content="192.155.49.228">
+	<meta name="keywords" content="game development, game developer, game programming, game programmer, videogame, artificial intelligence, 3D animation, game design, 3D modeling, game business, game jobs, game directory, game development software, game technology, 3D technology, game producer, game audio, game animation, virtual reality, digital entertainment, PC game, Xbox game, game news, new game, arcade development, Nintendo development, Playstation development, Playstation 2, PS2, Dreamcast development, Game Developer magazine, Computer Game Developers Conference, Game Developers Conference, Independent Game Developers Conference, CMP Game Media Group, game industry research, online game development, digital assets, free textures, free 3D models, free shaders, Gamasutra Exchange, 3D Studio Max textures">
+        
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<style>
+		
+			.cke_source{
+				white-space:normal !important;
+			}
+			.hide_phone > iframe {
+				width: 100%;
+			}
+			@media only screen and (max-width:479px){
+				.hide_phone > iframe {
+					height: auto;
+				}
+				.embeddedContent iframe, .page_data_1 iframe {
+					width: 100%;
+				}
+			}
+			.properties ul li {
+				padding: 5px 28px !important;
+			}
+			.formElement label.questionLabel p.description {
+				font-weight: normal;
+				padding: 0 !important;
+			}
+			div#rightlinks ul {
+				padding: 0 15px !important;
+			}
+		
+
+	</style>
+	<!-- CSS -->
+        
+        
+		<meta property="fb:app_id" content="">
+        			 <meta property="og:type" content="article">
+			 <meta property="og:url" content="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">
+			 <meta property="og:title" content="Procedural Dungeon Generation Algorithm">
+			 <meta property="og:image" content="http://www.gamasutra.com/blogs/edit/img/portrait/990582/portrait.png">
+			 <meta property="og:description" content="This post explains a technique for generating randomized dungeons that was first described by the developer of Tiny Keep. I&#39;ll go over it in a little more detail than the steps in the original post.">
+				
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:site" content="@gamasutra">
+		<meta name="twitter:creator" content="@gamasutra">
+					<meta name="twitter:title" content="Procedural Dungeon Generation Algorithm">
+			<meta name="twitter:description" content="This post explains a technique for generating randomized dungeons that was first described by the developer of Tiny Keep. I&#39;ll go over it in a little more detail than the steps in the original post.">
+			<meta name="twitter:creator" content="@gamasutra">
+			<meta name="twitter:url" content="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">
+			<meta name="twitter:image" content="http://www.gamasutra.com/blogs/edit/img/portrait/990582/portrait.png">
+		
+        
+                	<link rel="canonical" href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">
+                <link rel="alternate" type="application/rss+xml" title="Gamasutra Article Feed" href="http://feeds.feedburner.com/GamasutraFeatureArticles/">
+        <link rel="alternate" type="application/rss+xml" title="Gamasutra News Feed" href="http://feeds.feedburner.com/GamasutraNews/">
+        <link rel="alternate" type="application/rss+xml" title="Gamasutra Columns Feed" href="http://feeds.feedburner.com/GamasutraColumns/">
+        <link rel="alternate" type="application/rss+xml" title="Gamasutra Jobs Feed" href="http://feeds.feedburner.com/GamasutraJobs/">
+        <!-- link href="//twimgs.com/gamasutra/css/minified.css" rel="stylesheet" type="text/css" / -->
+        <link href="./physics-dungeon-generation_files/gama_unminified.css" rel="stylesheet" type="text/css">
+		<style>
+			
+				#div-gpt-ad-Ltile1 {
+					margin-top: 10px;
+				}
+			
+		</style>
+        
+        <meta name="node" content="228">
+        <meta name="pagecaching" content="57">
+                <script src="./physics-dungeon-generation_files/cb=gapi.loaded_1" async=""></script><script src="./physics-dungeon-generation_files/cb=gapi.loaded_0" async=""></script><script type="text/javascript" async="" src="http://www.google-analytics.com/ga.js"></script><script type="text/javascript" src="./physics-dungeon-generation_files/redesign_comments.js"></script><style type="text/css">
+:root div[id^="zergnet-widget-"],
+:root div[id^="mainads"],
+:root iframe[src^="http://static.mozo.com.au/strips/"],
+:root AMP-AD,
+:root [onclick*="content.ad/"],
+:root a[href*=".trust.zone"],
+:root p[id^="div-gpt-ad-"],
+:root input[onclick^="window.open('http://www.friendlyduck.com/AF_"],
+:root input[onclick^="window.open('http://www.FriendlyDuck.com/AF_"],
+:root img[alt^="Fuckbook"],
+:root iframe[src^="http://cdn2.adexprt.com/"],
+:root iframe[src^="http://cdn1.adexprt.com/"],
+:root iframe[src^="http://ad.yieldmanager.com/"],
+:root iframe[id^="google_ads_iframe"],
+:root iframe[id^="google_ads_frame"],
+:root div[itemtype="http://www.schema.org/WPAdBlock"],
+:root div[itemtype="http://schema.org/WPAdBlock"],
+:root div[id^="proadszone-"],
+:root div[id^="google_dfp_"],
+:root div[id^="dmRosAdWrapper"],
+:root div[id^="div_openx_ad_"],
+:root div[id^="div_ad_stack_"],
+:root div[id^="div-gpt-ad"],
+:root div[id^="div-adtech-ad-"],
+:root div[id^="dfp-slot-"],
+:root div[id^="dfp-ad-"],
+:root div[id^="cns_ads_"],
+:root div[id^="adrotate_widgets-"],
+:root div[id^="acm-ad-tag-"],
+:root div[id^="YFBMSN"],
+:root div[id^="MarketGid"],
+:root div[id^="ADV-SLOT-"],
+:root div[class^="gemini-ad"],
+:root aside[id^="div-gpt-ad"],
+:root a[target="_blank"][onmousedown="this.href^='http://paid.outbrain.com/network/redir?"],
+:root a[target="_blank"][href^="http://api.taboola.com/"],
+:root a[style="display:block;width:300px;min-height:250px"][href^="http://li.cnet.com/click?"],
+:root a[onmousedown^="this.href='https://paid.outbrain.com/network/redir?"][target="_blank"],
+:root a[onmousedown^="this.href='http://staffpicks.outbrain.com/network/redir?"][target="_blank"],
+:root a[onmousedown^="this.href='http://paid.outbrain.com/network/redir?"][target="_blank"],
+:root [href^="http://taboola-"][href*="/redirect.php?app.type="],
+:root [href^="http://games.ucoz.ru/"][target="_blank"],
+:root [href^="//t.MtagMonetizationA.com/"],
+:root [href^="//srv.buysellads.com/"],
+:root [href^="//api.ad-goi.com/"],
+:root [href^="//ads.ad-center.com/"],
+:root [href^="//adbit.co/?a=Advertise&"],
+:root a[href*="letsadvertisetogether.com"],
+:root a[href*="friendlyduck.com"],
+:root a[href*="emprestimo.eu"],
+:root a[href*="ad2upapp.com/"],
+:root a[href*="/adrotate-out.php?"],
+:root a[href*=".qertewrt.com/"],
+:root a[href*=".adk2x.com/"],
+:root a[href$="/vghd.shtml"],
+:root a[data-widget-outbrain-redirect^="http://paid.outbrain.com/network/redir?"],
+:root a[data-url^="http://paid.outbrain.com/network/redir?"],
+:root a[data-redirect^="this.href='http://paid.outbrain.com/network/redir?"],
+:root a[data-obtrack^="http://paid.outbrain.com/network/redir?"],
+:root [onclick^="window.open('http://adultfriendfinder.com/search/"],
+:root [lazy-ad="lefttop_banner"],
+:root A[href*="=Adtracker"],
+:root #ads_by_google,
+:root .addthis_toolbox,
+:root #adblock
+{ display: none !important; }</style>
+		<script src="./physics-dungeon-generation_files/jquery-1.8.2.min.js"></script>
+		<script type="text/javascript"> 
+        
+		function checkMail(obj){
+	 
+		   var think_opt_out = document.getElementById('Think_Opt_Out');
+	 
+		   if (document.getElementById('Think_Opt_Out').checked) {
+	 
+				 document.getElementById('Think_Opt_In').value = 0;
+		   } else {
+	 
+				 document.getElementById('Think_Opt_In').value = 1;
+		   }
+		   var firstname = document.getElementById('firstname').value;
+		   if (firstname == ""){
+				 alert('Please provide your first name');
+				 return false;
+		   }
+	 
+		   if (document.getElementById('lastname').value == ''){
+				 alert("Please provide your lastt name");
+				 return false;
+		   }
+	 
+	 
+		   var x = document.getElementById('EmailAddr').value;
+	 
+		   var filter  = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		   if (filter.test(x)) { return true; }
+		   else  { alert('Invalid Email Address detected. Please correct.'); return false; }
+	 
+	 
+		}
+		 
+		</script>
+        <script type="text/javascript" src="./physics-dungeon-generation_files/md5.js"></script>
+
+        
+
+        <script type="text/javascript">
+        var adrand = parseInt(Math.random()*1000000000, 10);
+        var adkeys = "key1+key2+key3+key4";
+        </script>
+
+        	<!-- Mobile Specific Metas -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"> 
+	
+	<script type="text/javascript">
+            
+		var browser			= navigator.userAgent;
+		var browserRegex	= /(Android|BlackBerry|IEMobile|Nokia|iP(ad|hone|od)|Opera M(obi|ini))/;
+		var isMobile		= false;
+		if(browser.match(browserRegex)) {
+			isMobile			= true;
+			
+		}
+        
+	</script>
+
+        <!-- Start Visual Website Optimizer Asynchronous Code -->
+        <script type="text/javascript">
+        
+        var _vwo_code=(function(){
+        var account_id=32069,
+        settings_tolerance=2000,
+        library_tolerance=2500,
+        use_existing_jquery=false,
+        // DO NOT EDIT BELOW THIS LINE
+        f=false,d=document;return{use_existing_jquery:function(){return use_existing_jquery;},library_tolerance:function(){return library_tolerance;},finish:function(){if(!f){f=true;var a=d.getElementById('_vis_opt_path_hides');if(a)a.parentNode.removeChild(a);}},finished:function(){return f;},load:function(a){var b=d.createElement('script');b.src=a;b.type='text/javascript';b.innerText;b.onerror=function(){_vwo_code.finish();};d.getElementsByTagName('head')[0].appendChild(b);},init:function(){settings_timer=setTimeout('_vwo_code.finish()',settings_tolerance);this.load('//dev.visualwebsiteoptimizer.com/j.php?a='+account_id+'&u='+encodeURIComponent(d.URL)+'&r='+Math.random());var a=d.createElement('style'),b='body{opacity:0 !important;filter:alpha(opacity=0) !important;background:none !important;}',h=d.getElementsByTagName('head')[0];a.setAttribute('id','_vis_opt_path_hides');a.setAttribute('type','text/css');if(a.styleSheet)a.styleSheet.cssText=b;else a.appendChild(d.createTextNode(b));h.appendChild(a);return settings_timer;}};}());_vwo_settings_timer=_vwo_code.init();
+        
+        </script><script src="http://dev.visualwebsiteoptimizer.com/j.php?a=32069&amp;u=http%3A%2F%2Fwww.gamasutra.com%2Fblogs%2FAAdonaac%2F20150903%2F252889%2FProcedural_Dungeon_Generation_Algorithm.php&amp;r=0.4309168073926055" type="text/javascript"></script>
+        <!-- End Visual Website Optimizer Asynchronous Code -->
+        
+        <!-- Start: GPT Sync -->
+        <script type="text/javascript">
+         
+         var gptadslots=[];
+         (function(){
+          var useSSL = 'https:' == document.location.protocol;
+          var src = (useSSL ? 'https:' : 'http:') + '//www.googletagservices.com/tag/js/gpt.js';
+          document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+         })();
+         
+        </script><script src="./physics-dungeon-generation_files/gpt.js"></script>
+
+        <script type="text/javascript">
+              
+                      googletag.pubads().setTargeting('kw',['programming','console-pc','indie']);
+                                            googletag.pubads().setTargeting('aid',['252889']);
+             
+
+ if (document.documentElement.clientWidth > 767){//Adslot 3 declaration
+
+  gptadslots[1]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[1,2]],'div-gpt-ad-skin').setTargeting('pos',['skin']).addService(googletag.pubads());
+
+ gptadslots[2]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[728,90]],'div-gpt-ad-top').setTargeting('pos',['top']).addService(googletag.pubads());
+
+}else{ 
+ gptadslots[13]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[300,50]],'div-gpt-ad-mobile_leaderboard').setTargeting('pos',['mobile_leaderboard']).addService(googletag.pubads());
+
+
+}
+            
+          //Adslot 1 declaration
+       
+
+          //Adslot 2 declaration
+
+ if (document.documentElement.clientWidth > 767){//Adslot 3 declaration
+
+
+          //Adslot 3 declaration
+          gptadslots[3]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[164,59]],'div-gpt-ad-button1').setTargeting('pos',['button1']).addService(googletag.pubads());
+
+          //Adslot 4 declaration
+          gptadslots[4]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[164,59]],'div-gpt-ad-button2').setTargeting('pos',['button2']).addService(googletag.pubads());
+
+          //Adslot 5 declaration
+          gptadslots[5]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[164,409]],'div-gpt-ad-callout').setTargeting('pos',['callout']).addService(googletag.pubads());
+
+
+}
+
+ 
+          //Adslot 6 declaration
+          gptadslots[6]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[300,250]],'div-gpt-ad-rec1').setTargeting('pos',['rec1']).addService(googletag.pubads());
+
+
+ if (document.documentElement.clientWidth > 767){//Adslot 3 declaration
+
+
+          //Adslot 7 declaration
+          gptadslots[7]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[160,600]],'div-gpt-ad-sky1').setTargeting('pos',['sky1']).addService(googletag.pubads());
+
+          //Adslot 8 declaration
+          gptadslots[8]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[160,160]],'div-gpt-ad-Ltile1').setTargeting('pos',['Ltile1']).addService(googletag.pubads());
+
+          //Adslot 9 declaration
+          gptadslots[9]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[164,177]],'div-gpt-ad-custom1').setTargeting('pos',['custom1']).addService(googletag.pubads());
+
+          //Adslot 10 declaration
+          gptadslots[10]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[666,171]],'div-gpt-ad-custom2').setTargeting('pos',['custom2']).addService(googletag.pubads());
+
+          //Adslot 11 declaration
+          gptadslots[11]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[164,177]],'div-gpt-ad-custom3').setTargeting('pos',['custom3']).addService(googletag.pubads());
+          
+                    	gptadslots[12]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[4,4]],'div-gpt-ad-custom4').setTargeting('pos',['video']).addService(googletag.pubads());
+          
+}
+
+       
+ gptadslots[14]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[3,3]],'div-gpt-ad-ribbon').setTargeting('pos',['ribbon']).addService(googletag.pubads());
+           //Adslot 17 declaration
+        gptadslots[17]= googletag.defineSlot('/2441/Gamasutra/consolepc', [[8,2]],'div-gpt-ad-native').setTargeting('pos',['native']).addService(googletag.pubads());
+
+
+          googletag.pubads().enableSingleRequest();
+          googletag.pubads().enableSyncRendering();
+          googletag.enableServices();
+        </script>
+        <!-- End: GPT -->
+	
+	<script type="text/javascript">
+	
+	  var _AdsNativeOpts =
+	  {
+	
+		keywords: ['consolepc']
+	
+	  };
+	
+	</script>
+        
+         		<script type="text/javascript">
+ 		
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-48094207-1']);
+			_gaq.push(['_trackPageview']);
+			(function()
+			{ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); }
+			)();
+		
+		</script>
+		<link rel="stylesheet" href="./physics-dungeon-generation_files/game_nativead.css">
+		<script language="JavaScript" src="http://i.ubm-us.net/oas/nativead/js/nativead.js"></script>
+		<script language="JavaScript" src="./physics-dungeon-generation_files/game_nativead.js"></script>
+	
+<style type="text/css">
+:root *[lnouo6j][hidden] { display: none !important; }</style></head>
+<body>
+    <div class="hide-phone">
+                                <!-- Beginning Sync AdSlot 1 for Ad unit Gamasutra//consolepc ### size: [[1,2]]  -->
+<div id="div-gpt-ad-skin" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-skin');
+ </script>
+</div>
+<!-- End AdSlot 1 -->
+            </div>
+
+    <div class="hide-phone">
+         <div class="wrapper properties">
+            <div class="container">
+                    <ul>
+                        <li>Our Properties:</li>
+                        <li class="activetab"><a href="http://www.gamasutra.com/" class="active">Gamasutra</a></li>
+                        <li><a href="http://www.gamecareerguide.com/">GameCareerGuide</a></li>
+                        <li><a href="http://www.indiegames.com/">IndieGames</a></li>
+                        <li><a href="http://www.gdcvault.com/">GDC Vault</a></li>
+                        <li><a href="http://www.gdconf.com/">GDC</a></li>
+                        <li><a href="http://www.igf.com/">IGF</a></li>
+                   </ul>
+              </div>
+         </div><!--end wrapper-->
+    </div>
+    
+    <br>
+     <div class="container bottom3">
+     	<div class="span-7">
+          	<a href="http://www.gamasutra.com/"><img src="./physics-dungeon-generation_files/gamasutra_logo.png" alt="Gamasutra: The Art &amp; Business of Making Games" width="243" height="77" border="0"></a><img alt="spacer" src="./physics-dungeon-generation_files/spacer.gif" width="27">
+		</div>
+          <div class="hide-phone">
+              <div class="div span-16 last leaderboard">
+                     
+                                                                               <!-- Beginning Sync AdSlot 2 for Ad unit Gamasutra//consolepc ### size: [[728,90]]  -->
+<div id="div-gpt-ad-top" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-top');
+ </script>
+</div>
+<!-- End AdSlot 2 -->
+                                           
+    
+              </div>
+          </div>
+    </div>
+          
+<div class="container"> 
+		<div class="span-20">
+			<div class="show-phone clearfix" style="padding:0px 0 5px 0"><!--sadie change-->
+                        <div class="span-5 center ">
+								<!-- Beginning Sync AdSlot 2 for Ad unit Gamasutra//consolepc ### size: [[300,50]]  -->
+<div id="div-gpt-ad-mobile_leaderboard" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-mobile_leaderboard');
+ </script>
+</div>
+<!-- End AdSlot 2 -->
+
+                        </div>
+				</div>
+
+                    <div class="show-phone"><!--there is another on the page for the regular size, this is phone only-->
+                         <div class="span-5 last nav_search">
+                              <div class="content center">
+                                   <span class="nav_searchtxt">SEARCH</span>
+                                   <form class="left" name="topsearchph" action="http://www.gamasutra.com/search/" method="GET">
+          
+                                               <input name="search_text" type="text" size="25" class="search">	  
+                                              <span class="nav_searchbutton"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php" onclick="javascript: document.topsearchph.submit(); return false;">GO</a></span>
+                                   
+                                   </form>
+                              </div>
+                         </div>
+                    </div><!--end show phone-->
+                    
+                    <div class="show-phone"><!--sadie change-->
+                        <div class="span-3">
+                                  <div class="login_phone" id="login_phone"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">LOGIN</a></div>
+                        </div>
+                    </div><!--end showphone-->
+                    <div class="nav">
+                	<div class="span-3 nav_jobs">
+                    	<div class="content">
+                              <a href="http://jobs.gamasutra.com/">GAME JOBS</a>
+                          </div>
+                    </div>
+                    <div class="span-12 nav_links">
+                         <div class="content">
+                                   <a href="http://www.gamasutra.com/updates/">updates</a>
+                                   <a href="http://www.gamasutra.com/blogs/">Blogs</a>
+                                   
+                                   <a href="http://www.gamasutra.com/contractors/contractor_display.php">contractors</a>
+                                   <a href="http://www.gamasutra.com/newsletter-signup">newsletter</a>
+                                   <a href="https://store.cmpgame.com/storefront.php?loc=&amp;skin=gamasutra_redesign">store</a>
+                         </div>
+                    </div>
+                    <div class="hide-phone">
+                        <div class="span-5 last nav_search">
+                             <div class="content">
+                                  <span class="nav_searchtxt">SEARCH</span>
+                                  <form class="left" name="topsearch" action="http://www.gamasutra.com/search/" method="GET">
+
+                                              <input name="search_text" type="text" size="10" class="search">	  
+                                             <span class="nav_searchbutton"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php" onclick="javascript: document.topsearch.submit(); return false;">GO</a></span>
+
+                                    </form>
+                             </div>
+                        </div>
+                    </div>
+                    <br class="clear">
+               </div><!--end nav-->
+               <div class="hide-phone"> 
+                    <div class="span-20 last"> 
+                       <div class="topicmenu">
+                            <ul>
+                                <li class="activetab"><a href="http://www.gamasutra.com/">ALL</a>
+                                </li><li><a href="http://www.gamasutra.com/topic/console-pc">CONSOLE/PC</a>
+                                </li><li><a href="http://www.gamasutra.com/topic/smartphone-tablet">SMARTPHONE/TABLET</a>
+                                </li><li><a href="http://www.gamasutra.com/topic/indie">INDEPENDENT</a>
+                                </li><li><a href="http://www.gamasutra.com/topic/vr">VR/AR</a>
+                                </li><li><a href="http://www.gamasutra.com/topic/social-online">SOCIAL/ONLINE</a>
+                                </li></ul>
+                                                          <span class="gdmag"><a href="http://www.gamasutra.com/topic/game-developer"><img src="./physics-dungeon-generation_files/btn_gdmag0.png" width="118px" height="33px"></a></span>
+                       </div>
+                   </div>
+               </div>		
+                    <div class="span-20 last content_bg">
+                        <div class="hide-phone">
+<div class="span-4">
+  <div class="content_box_left">
+    <div class="leftcol">
+        <!--member login-->
+                    <table width="166" border="0" cellspacing="0" cellpadding="0">
+  <tbody><tr>   
+    <td id="memberLogin" class="welcome">            <span class="MedGreenHeader">Member Login </span>
+            <div id="status" class="errors" style="color: #FF0000;margin-left: 5px;"></div>
+            <form onsubmit="NextGen.login(&#39;email&#39;,&#39;password&#39;,&#39;rememberme&#39;); return false;" method="post" id="LoginForm" name="login_form">
+               <table width="166" cellspacing="0" cellpadding="0" border="0">
+                  <tbody>
+                     <tr>
+                        <td width="5" rowspan="5"><img width="5" border="0" src="./physics-dungeon-generation_files/spacer.gif"></td>
+                        <td width="70" align="right" class="SmWhiteText">Email:&nbsp;&nbsp;</td>
+                        <td width="87"><input type="text" class="login_1" name="email"></td>
+                        <td width="5" rowspan="5"><img width="5" border="0" src="./physics-dungeon-generation_files/spacer.gif"></td>
+                     </tr>
+                     <tr>
+                        <td align="right" class="SmWhiteText">Password:&nbsp;&nbsp;</td>
+                        <td><input type="password" class="login_1" name="password"></td>
+                     </tr>
+                     <tr>
+                        <td>&nbsp;</td>
+                        <td style="padding: 3px;"><input type="submit" class="button" value="Login" id="submit" name="submit"></td>
+                     </tr>
+                     <tr>
+                        <td colspan="2"><a class="SmWhiteText" onclick="NextGen.forgetpassword();" href="javascript:void(0)">Forgot Password?</a>&nbsp;<a class="SmRedText" id="lbreglnk" href="javascript:void(0)" onclick="NextGen.register(&#39;/registration/index?assetId=347883&#39;);">Sign Up</a></td>
+                     </tr>                     
+                  </tbody>
+               </table>
+            </form>
+        </td>   
+  </tr>
+</tbody></table>
+                 <!--end memberlogin-->
+        
+        <!--begin social icons-->
+            <!--begin social icons-->
+<div class="bottom2">
+    <ul class="leftcol_social">
+       <li class="facebook"><a href="http://www.facebook.com/pages/Gamasutra/31610613408" target="_blank">&nbsp;</a></li>
+       <li class="twitter"><a href="http://twitter.com/gamasutra" target="_blank">&nbsp;</a></li>
+       <li class="feed"><a href="http://www.gamasutra.com/static2/rssfeeds.html">&nbsp;</a></li>
+       <li class="newsletter"><a href="http://www.gamasutra.com/newsletter-signup">&nbsp;</a></li>
+    </ul>
+</div>
+<!--end social icons-->
+        <!--end social icons-->
+        
+        <!--begin page numbers-->
+                <!--end page numbers-->
+        
+        <!--begin leftnav-->
+                <div class="leftnav_categories bottom2">
+   <a href="http://www.gamasutra.com/category/programming/"><img alt="arrow" src="./physics-dungeon-generation_files/button_programming.gif" width="24px" height="24px"></a>
+   <div class="leftnav_btn"><a href="http://www.gamasutra.com/category/programming/">PROGRAMMING</a></div>
+
+   <hr>
+
+   <a href="http://www.gamasutra.com/category/art/"><img alt="spacer" src="./physics-dungeon-generation_files/button_art.gif" width="24px" height="24px"></a>
+   <div class="leftnav_btn"><a href="http://www.gamasutra.com/category/art/">ART</a></div>
+
+   <hr>
+
+   <a href="http://www.gamasutra.com/category/audio/"><img alt="spacer" src="./physics-dungeon-generation_files/button_audio.gif" width="24px" height="24px"></a>         
+   <div class="leftnav_btn"><a href="http://www.gamasutra.com/category/audio/">AUDIO</a></div>
+
+   <hr>
+
+   <a href="http://www.gamasutra.com/category/design/"><img alt="arrow" src="./physics-dungeon-generation_files/button_design.gif" width="24px" height="24px"></a>
+   <div class="leftnav_btn"><a href="http://www.gamasutra.com/category/design/">DESIGN</a></div>
+
+   <hr>
+
+   <a href="http://www.gamasutra.com/category/production/"><img alt="arrow" src="./physics-dungeon-generation_files/button_production.gif" width="24px" height="24px"></a>
+   <div class="leftnav_btn"><a href="http://www.gamasutra.com/category/production/">PRODUCTION</a></div>
+
+   <hr>
+   <a href="http://www.gamasutra.com/category/business-marketing/"><img alt="arrow" src="./physics-dungeon-generation_files/button_business.gif" width="24px" height="24px"></a>
+   <div class="leftnav_btn"><a href="http://www.gamasutra.com/category/business-marketing/">BIZ/MARKETING</a></div>
+
+   <br class="clear">
+</div>          <!--end leftnav-->
+                  
+                    <!-- Beginning Sync AdSlot 3 for Ad unit Gamasutra//consolepc ### size: [[164,59]]  -->
+<div id="div-gpt-ad-button1" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-button1');
+ </script>
+</div>
+<!-- End AdSlot 3 -->
+            <!-- Beginning Sync AdSlot 4 for Ad unit Gamasutra//consolepc ### size: [[164,59]]  -->
+<div id="div-gpt-ad-button2" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-button2');
+ </script>
+</div>
+<!-- End AdSlot 4 -->
+            <!-- Beginning Sync AdSlot 5 for Ad unit Gamasutra//consolepc ### size: [[164,409]]  -->
+<div id="div-gpt-ad-callout" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-callout');
+ </script>
+</div>
+<!-- End AdSlot 5 -->
+            <!-- Beginning Sync AdSlot 9 for Ad unit Gamasutra//consolepc ### size: [[164,177]]  -->
+<div id="div-gpt-ad-custom1" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-custom1');
+ </script>
+</div>
+<!-- End AdSlot 9 -->
+            <!-- Beginning Sync AdSlot 11 for Ad unit Gamasutra//consolepc ### size: [[164,177]]  -->
+<div id="div-gpt-ad-custom3" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-custom3');
+ </script>
+</div>
+<!-- End AdSlot 11 -->
+                
+        <!-- begin event tickers -->
+			              
+        <!-- end event tickers -->
+	
+         <!--begin jobs-->
+            <div class="header"><img alt="arrow" src="./physics-dungeon-generation_files/icon_jobs.png" width="22px" height="20px"><a href="http://jobs.gamasutra.com/">Latest Jobs</a></div>
+<div class="leftnav bottom2">
+     <a href="http://jobs.gamasutra.com/"><strong>View All</strong></a> &nbsp;&nbsp;&nbsp;
+     <a href="http://feeds.feedburner.com/GamasutraJobs"><strong>RSS</strong></a>
+     <hr>
+     <strong>January 10, 2017</strong>
+     <hr>
+     <ul>    
+            <li>PlayRaven<br>
+              <a href="http://jobs.gamasutra.com/job/backend-developer-playraven-helsinki-31373">BACKEND DEVELOPER - PLAYRAVEN</a>
+        </li>
+        <li class="line"></li>
+            <li>SYBO Games<br>
+              <a href="http://jobs.gamasutra.com/job/senior-mobile-engineer-s-and-game-designer-s-copenhagen-31314">Senior Mobile Engineer(s) and Game Designer(s)</a>
+        </li>
+        <li class="line"></li>
+            <li>NEXON M<br>
+              <a href="http://jobs.gamasutra.com/job/sr-software-engineer-big-data-emeryville-california-31371">Sr. Software Engineer, Big Data</a>
+        </li>
+        <li class="line"></li>
+            <li>Tesla Motors, Inc. <br>
+              <a href="http://jobs.gamasutra.com/job/developer-digital-design-technologies-los-angeles-california-31370">Developer, Digital Design Technologies</a>
+        </li>
+        <li class="line"></li>
+            <li>PlayRaven<br>
+              <a href="http://jobs.gamasutra.com/job/senior-game-programmer-playraven-helsinki-31369">SENIOR GAME PROGRAMMER - PLAYRAVEN</a>
+        </li>
+        <li class="line"></li>
+            <li>Crate Entertainment<br>
+              <a href="http://jobs.gamasutra.com/job/graphics-engine-programmer-boston-area-work-remotely-massachusetts-31366">Graphics / Engine Programmer</a>
+        </li>
+        <li class="line"></li>
+         </ul>    
+</div>
+         <!--end jobs-->   
+           			
+         <!--begin blogs-->
+            <div class="header"><img alt="arrow" src="./physics-dungeon-generation_files/icon_blogs.png" width="22px" height="20px"><a href="http://www.gamasutra.com/blogs/">Latest Blogs</a></div>
+<div class="leftnav bottom2">
+    <a href="http://www.gamasutra.com/blogs/"><strong>View All</strong></a> 
+    &nbsp;&nbsp;&nbsp; <a href="http://www.gamasutra.com/blogs/edit/"><strong>Post</strong></a>
+    &nbsp;&nbsp;&nbsp; <a href="http://www.gamasutra.com/blogs/rss/"><strong>RSS</strong></a>
+    <hr>
+    <strong>January 10, 2017</strong>
+    <hr>   
+    <ul>
+        
+        <li>
+            <a href="http://www.gamasutra.com/blogs/SandeChen/20170110/288901/The_Game_Designer_at_the_Game_Jam.php">The Game Designer at the Game Jam</a>
+                    </li>
+        <li class="line"></li>
+        
+        <li>
+            <a href="http://www.gamasutra.com/blogs/JesseHarlin/20170110/288896/Emotional_Wreckage_My_Emotional_Journey_through_the_Wastes_of_Fallout_4.php">Emotional Wreckage: My Emotional Journey through the Wastes of Fallout 4</a>
+                    </li>
+        <li class="line"></li>
+        
+        <li>
+            <a href="http://www.gamasutra.com/blogs/LaralynMcWillams/20170109/288848/Twenty_Things_Ive_Learned_About_Game_Development.php">Twenty Things I've Learned About Game Development</a>
+             
+                [<a title="2 comments" href="http://www.gamasutra.com/blogs/LaralynMcWillams/20170109/288848/Twenty_Things_Ive_Learned_About_Game_Development.php#comments">2</a>]
+                    </li>
+        <li class="line"></li>
+        
+        <li>
+            <a href="http://www.gamasutra.com/blogs/WinifredPhillips/20170109/288872/Video_game_composers_can_make_you_smarter_The_music_of_Dragon_Front_Part_3.php">Video game composers can make you smarter! (The music of Dragon Front) Part 3</a>
+                    </li>
+        <li class="line"></li>
+        
+        <li>
+            <a href="http://www.gamasutra.com/blogs/SimonCarless/20170108/288857/Video_Game_Deep_Cuts_Let_It_Die_2017.php">Video Game Deep Cuts: Let It Die, 2017&nbsp;</a>
+                    </li>
+        <li class="line"></li>
+       
+    </ul>
+</div>
+         <!--end blogs-->
+         
+         <!--begin press releases-->
+            <div class="header"><img alt="arrow" src="./physics-dungeon-generation_files/icon_blogs.png" width="22px" height="20px">Press Releases</div>
+<div class="leftnav bottom2">
+    <strong>January 10, 2017</strong>
+	<hr>
+	       <a href="http://www.gamasutra.com/pressreleases_index.php"><strong>Games Press</strong></a>
+   <hr>
+   <ul>
+          
+        <li>
+            <a href="http://www.gamasutra.com/view/pressreleases/288985/Mantis_Burn_Racingreg_is_33_Off_on_XBOX_Live_Games_withGold_This_Week.php">Mantis Burn Racing®<br>
+is 33% Off on XBOX<br>
+Live...</a>
+        </li>
+        <li class="line"></li>
+          
+        <li>
+            <a href="http://www.gamasutra.com/view/pressreleases/288986/DOWNLOAD_THE_TALES_OF_BERSERIAtrade_DEMO_TODAY_FOR_THEPLAYSTATIONreg4_SYSTEM_AND_STEAMreg.php">DOWNLOAD THE TALES OF<br>
+BERSERIA™ DEMO<br>
+TODAY...</a>
+        </li>
+        <li class="line"></li>
+          
+        <li>
+            <a href="http://www.gamasutra.com/view/pressreleases/288987/FOR_HONORtrade_CLOSED_BETA_COMING_JANUARY26thndash29th.php">FOR HONOR™ CLOSED<br>
+BETA COMING JANUARY...</a>
+        </li>
+        <li class="line"></li>
+          
+        <li>
+            <a href="http://www.gamasutra.com/view/pressreleases/288988/ldquoGenderSwappedrdquo_Warlord_Sim_Sengoku_ProvidenceLaunches_on_Nutaku.php">“Gender-Swapped&amp;rdq<br>
+uo; Warlord Sim<br>
+'Sengoku...</a>
+        </li>
+        <li class="line"></li>
+          
+        <li>
+            <a href="http://www.gamasutra.com/view/pressreleases/288989/INDIE_GAME_DEVELOPER_PART_TIME_MONKEY_HAS_SURPRISE_HIT_WITHBREAKOUT_NINJA.php">INDIE GAME DEVELOPER,<br>
+PART TIME MONKEY HAS...</a>
+        </li>
+        <li class="line"></li>
+         </ul>
+   <a href="http://www.gamasutra.com/pressreleases_index.php"><strong>View All</strong></a> 
+   &nbsp;&nbsp;&nbsp; <a href="http://www.gamasutra.com/pressreleases/rss/"><strong>RSS</strong></a>
+</div>         <!--end press releases-->
+                         
+         <!--begin calendar-->
+            <!--
+
+<div class="header"><img alt="arrow" src="http://twimgs.com/gamasutra/images/icon_calendar.png" width="22px" height="20px"/><a href="http://www.gamasutra.com/calendar/calendar.php">Calendar</a></div>
+<div class="leftnav bottom2">
+    <a href="http://www.gamasutra.com/calendar/calendar.php"><strong>View All</strong></a> &nbsp;&nbsp;&nbsp; <a href="http://www.gamasutra.com/calendar/calendar_submit.php"><strong>Submit Event</strong></a>
+    <hr>
+    <ul>
+        
+    </ul>
+</div>
+
+-->         <!--end calendar-->
+                         
+         <!--begin about-->
+            <div class="header"><img alt="arrow" src="./physics-dungeon-generation_files/icon_about.png" width="22px" height="20px"><a href="http://www.gamasutra.com/contactus">About</a></div>
+<div class="leftnav bottom2">
+    <ul>
+            <li><strong>Editor-In-Chief: </strong><br><a href="mailto:kgraft@gamasutra.com">Kris Graft</a></li>
+            <li class="line"></li>
+         
+           
+            <li><strong>Senior Contributing Editor: </strong><br><a href="mailto:bsheffield@gdmag.com">Brandon Sheffield</a></li>
+            <li class="line"></li>
+            <li><strong>News Editors: </strong><br> <a href="mailto:alex.wawro@ubm.com">Alex Wawro</a></li>
+            <li class="line"></li>
+          
+           
+            <li><strong>Advertising/Recruitment/Education: </strong><br><a href="mailto:courtney.blair@ubm.com">Courtney Blair</a></li>
+    </ul>
+    <hr>
+    <div class="center"><a href="http://www.gamasutra.com/contactus">Contact Gamasutra</a></div>
+    <hr>
+    <div class="center"><a href="mailto:support@gamasutra.com">Report a Problem</a></div>
+    <hr>
+    <div class="center"><a href="mailto:news@gamasutra.com">Submit News</a></div>
+    <hr>
+    <div class="center"><a href="http://www.gamasutra.com/static2/comment_guidelines.html">Comment Guidelines</a></div>
+    <hr>
+    <div class="center"><a href="http://www.gamasutra.com/static2/blogsubmissions.html">Blogging Guidelines</a></div>
+	<hr>
+    <div class="center"><a href="http://www.gamasutra.com/static2/howwework.html">How We Work</a></div>
+</div>
+
+<div class="bottom2">
+    <a href="http://www.jointhegamenetwork.com/online/gamasutra/index.html" target="_blank">
+        <img src="./physics-dungeon-generation_files/AdwGama_177x60_button_v1.jpg" alt="Sponsor" border="0" class="whiteTop" width="177px" height="60px">
+    </a>
+</div>
+             <!--end about-->
+         
+         <!--begin network-->
+            <div class="header"><img alt="arrow" src="./physics-dungeon-generation_files/icon_about.png" width="22px" height="20px"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#">Gama Network</a></div>
+<div class="leftnav_network bottom2">
+    If you enjoy reading this site, you might also want to check out these UBM Tech sites:
+    <hr>
+    <a href="http://www.gamecareerguide.com/"><!-- img src="http://www.indiegames.com/blog/gcgmini.jpg" align="left" hspace="2"/ --></a> 
+    <div class="leftnav_btn"><a href="http://www.gamecareerguide.com/">Game Career Guide</a></div>
+    <hr>
+    <a href="http://www.indiegames.com/blog"><!-- img src="http://www.indiegames.com/blog/indiemini.jpg" align="left" hspace="2"/ --></a>
+    <div class="leftnav_btn"><a href="http://www.indiegames.com/blog">Indie Games</a></div>
+    <br class="clear">
+</div>         <!--end network-->
+         
+         <!--begin store-->
+                     <!--end store-->
+         
+                
+    </div><!--end leftcol-->
+  </div>
+</div> 
+</div>  <style>.content_box_middle pre {
+		overflow-x:auto;
+	}</style>
+<div class="span-16 last">
+    <div class="content_box_middle">
+        <!-- InstanceBeginEditable name="BodyContent" --> 
+        <div class="header_large">
+            <span class="left"><img alt="arrow" src="./physics-dungeon-generation_files/icon_blogs.png"><a href="http://www.gamasutra.com/blogs/">Blogs</a></span>
+        </div>
+        <div class="page_item"> 
+                        <div class="clear">&nbsp;</div>
+            <div class="item_title">Procedural Dungeon Generation Algorithm</div>
+            <div>
+                <span class="newsAuth">by <a href="http://www.gamasutra.com/blogs/author/AAdonaac/990582/">A Adonaac</a> on 09/03/15 02:05:00 pm 
+                                        &nbsp; <img valign="bottom" border="0" src="./physics-dungeon-generation_files/featuredIcon_gamaBlog.gif" alt="Featured Blogs">                                        <br>
+                </span>
+            </div>
+            <div>
+                <br>
+                                    <span class="comment_text">
+                                                    <a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comments">24 comments</a>
+                                            </span>
+                    <a name="twitter_share" type="button" href="http://twitter.com/?status=RT%20@gamasutra:%20Procedural%20Dungeon%20Generation%20Algorithm%20http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/" target="_blank"><img src="./physics-dungeon-generation_files/twitter.gif" alt="Share on Twitter" border="0" height="20"></a>
+                    <a name="fb_share" type="button" href="http://www.facebook.com/sharer.php?u=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php" target="_blank"><img src="./physics-dungeon-generation_files/facebook_button.png" alt="Share on Facebook" border="0"></a> <!-- <script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script> -->
+                    <script type="text/javascript" src="./physics-dungeon-generation_files/plusone.js" gapi_processed="true"></script>
+                    <div id="___plusone_0" style="text-indent: 0px; margin: 0px; padding: 0px; background: transparent; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 32px; height: 20px;"><iframe ng-non-bindable="" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 32px; margin: 0px; border-style: none; left: 0px; visibility: visible; height: 20px;" tabindex="0" vspace="0" width="100%" id="I0_1484105860077" name="I0_1484105860077" src="./physics-dungeon-generation_files/fastbutton.html" data-gapiattached="true" title="+1"></iframe></div>
+					<span id="edit_post_link"></span>&nbsp;&nbsp;
+					<a href="http://www.gamasutra.com/blogs/rss/"><img src="./physics-dungeon-generation_files/icon_rss.gif" width="15" height="15" border="0" alt="RSS"></a>
+                            </div>
+            <hr>
+            <div class="item_body mobile_image_transform">       
+                <strong><i><small>
+                    The following blog post, unless otherwise noted, was written by a member of Gamasutra’s community.<br>
+                    The thoughts and opinions expressed are those of the writer and not Gamasutra or its parent company.
+                </small></i></strong>
+                <hr>
+                <div class="clear">&nbsp;</div>
+                <div style="text-align: justify;">This post explains a technique for generating randomized dungeons that was first described by <a href="http://store.steampowered.com/app/278620/">TinyKeepDev</a> <a href="https://www.reddit.com/r/gamedev/comments/1dlwc4/procedural_dungeon_generation_algorithm_explained/">here</a>. I'll go over it in a little more detail than the steps in the original post. The general way the algorithm works is this:</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" height="554" src="./physics-dungeon-generation_files/wM30Xyl.gif" width="530"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<h1 style="text-align: justify;">Generate Rooms</h1>
+
+<div style="text-align: justify;">First you wanna generate some rooms with some width and height that are placed randomly inside a circle. TKdev's algorithm used the normal distribution for generating room sizes and I think that this is generally a good idea as it gives you more parameters to play with. Picking different ratios between width/height mean and standard deviation will generally result in different looking dungeons.</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">One function you might need to do this is <em>getRandomPointInCircle</em>:</div>
+
+<div class="highlight highlight-lua">
+<pre><code><span class="pl-k">function</span> <span class="pl-en">getRandomPointInCircle</span>(<span class="pl-smi">radius</span>)
+  <span class="pl-k">local</span> t <span class="pl-k">=</span> <span class="pl-c1">2</span><span class="pl-k">*</span><span class="pl-c1">math.pi</span><span class="pl-k">*</span><span class="pl-c1">math.random</span>()
+  <span class="pl-k">local</span> u <span class="pl-k">=</span> <span class="pl-c1">math.random</span>()<span class="pl-k">+</span><span class="pl-c1">math.random</span>()
+  <span class="pl-k">local</span> r <span class="pl-k">=</span> <span class="pl-c1">nil</span>
+  <span class="pl-k">if</span> u <span class="pl-k">&gt;</span> <span class="pl-c1">1</span> <span class="pl-k">then</span> r <span class="pl-k">=</span> <span class="pl-c1">2</span><span class="pl-k">-</span>u <span class="pl-k">else</span> r <span class="pl-k">=</span> u <span class="pl-k">end</span>
+  <span class="pl-k">return</span> radius<span class="pl-k">*</span>r<span class="pl-k">*</span><span class="pl-c1">math.cos</span>(t), radius<span class="pl-k">*</span>r<span class="pl-k">*</span><span class="pl-c1">math.sin</span>(t)
+<span class="pl-k">end</span></code></pre>
+</div>
+
+<div style="text-align: justify;">You can get more info on how that works exactly&nbsp;<a href="http://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly">here</a>. And after that you should be able to do something like this:</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/9TsZluP.gif"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">One very important thing that you have to consider is that since you're (at least conceptually) dealing with a grid of tiles you have to snap everything to that same grid. In the gif above the tile size is 4 pixels, meaning that all room positions and sizes are multiples of 4. To do this I wrap position and width/height assignments in a function that rounds the number to the tile size:</div>
+
+<div style="text-align: justify;">
+<div class="highlight highlight-lua">
+<pre><code><span class="pl-k">function</span> <span class="pl-en">roundm</span>(<span class="pl-smi">n, m</span>) <span class="pl-k">return</span> <span class="pl-c1">math.floor</span>(((n <span class="pl-k">+</span> m <span class="pl-k">-</span> <span class="pl-c1">1</span>)<span class="pl-k">/</span>m))<span class="pl-k">*</span>m <span class="pl-k">end</span></code>
+
+<span class="pl-c">-- Now we can change the returned value from getRandomPointInCircle to:</span>
+<span class="pl-k">function</span> <span class="pl-en">getRandomPointInCircle</span>(<span class="pl-smi">radius</span>)
+  <span class="pl-c1">...</span>
+  <span class="pl-k">return</span> <span class="pl-c1">roundm</span>(radius<span class="pl-k">*</span>r<span class="pl-k">*</span><span class="pl-c1">math.cos</span>(t), tile_size), 
+         <span class="pl-c1">roundm</span>(radius<span class="pl-k">*</span>r<span class="pl-k">*</span><span class="pl-c1">math.sin</span>(t), tile_size)
+<span class="pl-k">end</span></pre>
+
+<p>&nbsp;</p>
+</div>
+</div>
+
+<h1 style="text-align: justify;">Separate Rooms</h1>
+
+<div style="text-align: justify;">Now we can move on to the separation part. There's a lot of rooms mashed together in one place and they should not be overlapping somehow. TKdev used the separation steering behavior to do this but I found that it's much easier to just use a physics engine. After you've added all rooms, simply add solid physics bodies to match each room's position and then just run the simulation until all bodies go back to sleep. In the gif I'm running the simulation normally but when you're doing this between levels you can advance the physics simulation faster.</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/Zv2kYmv.gif"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">The physics bodies themselves are not tied to the tile grid in any way, but when setting the room's position you wrap it with the <em>roundm</em> call and then you get rooms that are not overlapping with each other and that also respect the tile grid. The gif below shows this in action as the blue outlines are the physics bodies and there's always a slight mismatch between them and the rooms since their position is always being rounded:</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/eyTNcXE.gif"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">One issue that might come up is when you want to have rooms that are skewed horizontally or vertically. For instance, consider the game I'm working on:</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/COnbUTF.gif"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">Combat is very horizontally oriented and so I probably want to have most rooms being bigger in width than they are in height. The problem with this lies in how the physics engine decides to resolve its collisions whenever long rooms are near each other:</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/VbvngEZ.gif"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">As you can see, the dungeon becomes very tall, which is not ideal. To fix this we can spawn rooms initially inside a thin strip instead of on a circle. This ensures that the dungeon itself will have a decent width to height ratio:</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/yMEwhwr.gif"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">To spawn randomly inside this strip we can just change the `getRandomPointInCircle` function to spawn points inside an ellipse instead (in the gif above I used <em>ellipse_width = 400</em> and <em>ellipse_height = 20</em>):</div>
+
+<div style="text-align: justify;">
+<div class="highlight highlight-lua">
+<pre><code><span class="pl-k">function</span> <span class="pl-en">getRandomPointInEllipse</span>(<span class="pl-smi">ellipse_width, ellipse_height</span>)
+  <span class="pl-k">local</span> t <span class="pl-k">=</span> <span class="pl-c1">2</span><span class="pl-k">*</span><span class="pl-c1">math.pi</span><span class="pl-k">*</span><span class="pl-c1">math.random</span>()
+  <span class="pl-k">local</span> u <span class="pl-k">=</span> <span class="pl-c1">math.random</span>()<span class="pl-k">+</span><span class="pl-c1">math.random</span>()
+  <span class="pl-k">local</span> r <span class="pl-k">=</span> <span class="pl-c1">nil</span>
+  <span class="pl-k">if</span> u <span class="pl-k">&gt;</span> <span class="pl-c1">1</span> <span class="pl-k">then</span> r <span class="pl-k">=</span> <span class="pl-c1">2</span><span class="pl-k">-</span>u <span class="pl-k">else</span> r <span class="pl-k">=</span> u <span class="pl-k">end</span>
+  <span class="pl-k">return</span> <span class="pl-c1">roundm</span>(ellipse_width<span class="pl-k">*</span>r<span class="pl-k">*</span><span class="pl-c1">math.cos</span>(t)<span class="pl-k">/</span><span class="pl-c1">2</span>, tile_size), 
+         <span class="pl-c1">roundm</span>(ellipse_height<span class="pl-k">*</span>r<span class="pl-k">*</span><span class="pl-c1">math.sin</span>(t)<span class="pl-k">/</span><span class="pl-c1">2</span>, tile_size)
+<span class="pl-k">end</span></code></pre>
+
+<p>&nbsp;</p>
+</div>
+</div>
+
+<h1 style="text-align: justify;">Main Rooms</h1>
+
+<div style="text-align: justify;">The next step simply determines which rooms are main/hub rooms and which ones aren't. TKdev's approach here is pretty solid: just pick rooms that are above some width/height threshold. For the gif below the threshold I used was <em>1.25*mean</em>, meaning, if <em>width_mean</em> and <em>height_mean</em> are 24 then rooms with width and height bigger than 30 will be selected.</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/yeqXkTe.gif"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<h1 style="text-align: justify;">Delaunay Triangulation + Graph</h1>
+
+<div style="text-align: justify;">Now we take all the midpoints of the selected rooms and feed that into the Delaunay procedure. You either implement this procedure yourself or find someone else who's done it and shared the source. In my case I got lucky and&nbsp;<a href="https://github.com/Yonaba/delaunay">Yonaba already implemented it</a>. As you can see from that interface, it takes in points and spits out triangles:</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/BUeRTaW.gif"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">After you have the triangles you can then generate a graph. This procedure should be fairly simple provided you have a graph data structure/library at hand. In case you weren't doing this already, it's useful that your Room objects/structures have unique ids to them so that you can add those ids to the graph instead of having to copy them around.</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<h1 style="text-align: justify;">Minimum Spanning Tree</h1>
+
+<div style="text-align: justify;">After this we generate a minimum spanning tree from the graph. Again, either implement this yourself or find someone who's done it in your language of choice.</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/gc77fqU.gif"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">The minimum spanning tree will ensure that all main rooms in the dungeon are reachable but also will make it so that they're not all connected as before. This is useful because by default we usually don't want a super connected dungeon but we also don't want unreachable islands. However, we also usually don't want a dungeon that only has one linear path, so what we do now is add a few edges back from the Delaunay graph:</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/Spogz4z.gif"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">This will add a few more paths and loops and will make the dungeon more interesting. TKdev arrived at 15% of edges being added back and I found that around 8-10% was a better value. This may vary depending on how connected you want the dungeon to be in the end.</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<h1 style="text-align: justify;">Hallways</h1>
+
+<div style="text-align: justify;">For the final part we want to add hallways to the dungeon. To do this we go through each node in the graph and then for each other node that connects to it we create lines between them. If the nodes are horizontally close enough (their <em>y</em> position is similar) then we create a horizontal line. If the nodes are vertically close enough then we create a vertical line. If the nodes are not close together either horizontally or vertically then we create 2 lines forming an L shape.&nbsp;</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">The test that I used for what ~close enough~ means calculates the midpoint between both nodes' positions and checks to see if that midpoint's <em>x or y</em> attributes are inside the node's boundaries. If they are then I create the line from that midpoint's position. If they aren't then I create two lines, both going from the source's midpoint to the target's midpoint but only in one axis.</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/iKR57gS.png"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">In the picture above you can see examples of all cases. Nodes 62 and 47 have a horizontal line between them, nodes 60 and 125 have a vertical one and nodes 118 and 119 have an L shape. It's also important to note that those aren't the only lines I'm creating. They are the only ones I'm drawing but I'm also creating 2 additional lines to the side of each one spaced by <em>tile_size</em>, since I want my corridors to be at least 3 tiles wide in either width or height.</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">Anyway, after this we check to see which rooms that aren't main/hub rooms that collide with each of the lines. Colliding rooms are then added to whatever structure you're using to hold all this by now and they will serve as the skeleton for the hallways:</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/Y7E7Egn.png"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">Depending on the uniformity and size of the rooms that you initially set you'll get different looking dungeons here. If you want your hallways to be more uniform and less weird looking then you should aim for low standard deviation and you should put some checks in place to keep rooms from being too skinny one way or the other.</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">For the last step we simply add 1 tile sized grid cells to make up the missing parts. Note that you don't actually need a grid data structure or anything too fancy, you can just go through each line according to the tile size and add grid rounded positions (that will correspond to a 1 tile sized cell) to some list. This is where having 3 (or more) lines happening instead of only 1 matters.</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/bSV1gpV.png"></div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/t4G5oRK.gif"></div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">And then after this we're done!</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<div style="text-align: justify;">&nbsp;</div>
+
+<h1 style="text-align: justify;">END</h1>
+
+<div style="text-align: justify;">The data structures I returned from this entire procedure were: a list of rooms (each room is just a structure with a unique id, x/y positions and width/height); the graph, where each node points to a room id and the edges have the distance between rooms in tiles; and then an actual 2D grid, where each cell can be nothing (meaning its empty), can point to a main/hub room, can point to a hallway room or can be hallway cell. With these 3 structures I think it's possible to get any type of data you could want out of the layout and then you can figure out where to place doors, enemies, items, which rooms should have bosses, and so on.</div>
+
+<div style="text-align: center;">&nbsp;</div>
+
+<div style="text-align: center;"><img alt="" src="./physics-dungeon-generation_files/GKO8EUG.gif"></div>
+            </div>   
+                                                <hr>
+                    <div class="hide-phone">
+                        <h3>Related Jobs</h3>
+                                                   <div class="stories_item">
+                                <div class="thumb"><a href="http://jobs.gamasutra.com/job/backend-developer-playraven-helsinki-31373"><img src="./physics-dungeon-generation_files/988530.png" alt="PlayRaven" width="120"></a></div>
+                                <div class="title">
+                                    <strong>
+                                    PlayRaven — 
+                                                                          Helsinki,
+                                                                                                            Finland
+                                    <br>
+                                    [01.10.17]
+                                   </strong>
+                                   <br>
+                                   <a href="http://jobs.gamasutra.com/job/backend-developer-playraven-helsinki-31373">BACKEND DEVELOPER - PLAYRAVEN</a>
+                                </div>
+                           </div>
+                                                   <div class="stories_item">
+                                <div class="thumb"><a href="http://jobs.gamasutra.com/job/senior-mobile-engineer-s-and-game-designer-s-copenhagen-31314"><img src="./physics-dungeon-generation_files/1009161.png" alt="SYBO Games" width="120"></a></div>
+                                <div class="title">
+                                    <strong>
+                                    SYBO Games — 
+                                                                          Copenhagen,
+                                                                                                            Denmark
+                                    <br>
+                                    [01.10.17]
+                                   </strong>
+                                   <br>
+                                   <a href="http://jobs.gamasutra.com/job/senior-mobile-engineer-s-and-game-designer-s-copenhagen-31314">Senior Mobile Engineer(s) and Game Designer(s)</a>
+                                </div>
+                           </div>
+                                                   <div class="stories_item">
+                                <div class="thumb"><a href="http://jobs.gamasutra.com/job/sr-software-engineer-big-data-emeryville-california-31371"><img src="./physics-dungeon-generation_files/989523.png" alt="NEXON M" width="120"></a></div>
+                                <div class="title">
+                                    <strong>
+                                    NEXON M — 
+                                                                          Emeryville,
+                                                                                                              California,
+                                                                        United States
+                                    <br>
+                                    [01.09.17]
+                                   </strong>
+                                   <br>
+                                   <a href="http://jobs.gamasutra.com/job/sr-software-engineer-big-data-emeryville-california-31371">Sr. Software Engineer, Big Data</a>
+                                </div>
+                           </div>
+                                                   <div class="stories_item">
+                                <div class="thumb"><a href="http://jobs.gamasutra.com/job/developer-digital-design-technologies-los-angeles-california-31370"><img src="./physics-dungeon-generation_files/1014381.png" alt="Tesla Motors, Inc. " width="120"></a></div>
+                                <div class="title">
+                                    <strong>
+                                    Tesla Motors, Inc.  — 
+                                                                          Los Angeles,
+                                                                                                              California,
+                                                                        United States
+                                    <br>
+                                    [01.09.17]
+                                   </strong>
+                                   <br>
+                                   <a href="http://jobs.gamasutra.com/job/developer-digital-design-technologies-los-angeles-california-31370">Developer, Digital Design Technologies</a>
+                                </div>
+                           </div>
+                                            </div>
+                    <br class="clear"><br>
+                    <div class="right small">
+                        <strong>[<a href="http://jobs.gamasutra.com/">View All Jobs</a>]</strong>
+                    </div>
+                    <br class="clear"><br>
+                                        <hr>
+            							<script type="text/javascript">
+								
+								//Rectangle 1 on small mobile device
+								if (document.documentElement.clientWidth <= 767)
+								{ document.write('<div id="div-gpt-ad-rec1"><center>'); googletag.display('div-gpt-ad-rec1'); document.write('</center></div>'); }
+								
+							</script>
+
+
+                <div id="dynamiccomments"><a style="font-weight: bold; font-size: 16px;" name="comments">Comments</a><br><div class="parentComment"> <table id="comment273402" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;">Daniel Pool<br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273402">3 Sep 2015 at 12:53 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/questionmark.jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273402_show" class="single_comment">This is really awesome! The generator could really help boast content for my project without adding too much overhead programming. Great work!          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273402_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;">1&nbsp;<img src="./physics-dungeon-generation_files/thumbs_up.png" height="13" border="0" alt="likes"></div></div>         </div>         <div id="comment273402_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273402_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;">1&nbsp;<img src="./physics-dungeon-generation_files/thumbs_up.png" height="13" border="0" alt="likes"></div>            </div>            <form name="comments273402_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273402" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273402">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273402_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273402)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273408" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/IanSnyder/912366/">Ian Snyder</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273408">3 Sep 2015 at 4:00 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait.jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273408_show" class="single_comment">Thanks for this, a great tech piece that was worth it for the GIFs alone :D          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273408_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;">3&nbsp;<img src="./physics-dungeon-generation_files/thumbs_up.png" height="13" border="0" alt="likes"></div></div>         </div>         <div id="comment273408_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273408_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;">3&nbsp;<img src="./physics-dungeon-generation_files/thumbs_up.png" height="13" border="0" alt="likes"></div>            </div>            <form name="comments273408_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273408" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273408">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273408_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273408)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273409" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/ClaytonWeaver/909345/">Clayton Weaver</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273409">3 Sep 2015 at 4:47 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait(1).jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273409_show" class="single_comment">This was an interesting read for someone who has thought about procedural maps, but never looked into.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273409_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273409_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273409_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273409_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273409" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273409">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273409_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273409)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273410" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;">CHASE DE LANGUILLETTE<br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273410">3 Sep 2015 at 4:51 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/questionmark.jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273410_show" class="single_comment">using a physics engine to separate your rooms is weird..but also kind of genius.  whatever gets the job done :)          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273410_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;">2&nbsp;<img src="./physics-dungeon-generation_files/thumbs_up.png" height="13" border="0" alt="likes"></div></div>         </div>         <div id="comment273410_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273410_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;">2&nbsp;<img src="./physics-dungeon-generation_files/thumbs_up.png" height="13" border="0" alt="likes"></div>            </div>            <form name="comments273410_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273410" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273410">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273410_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273410)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="replyComment" align="right"> <table id="comment273414" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/StevenAn/738861/">Steven An</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273414">3 Sep 2015 at 7:01 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait.png">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273414_show" class="single_comment">well, there's nothing weird about it. one of the fundamental operations in a physics engine is eliminating overlaps. if you were to implement a similar algorithm outside a physics engine, you would be implementing the same thing except probably worse.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273414_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273414_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273414_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273414_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273414" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273414">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273414_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273414)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="replyComment" align="right"> <table id="comment273424" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;">Eric Dejouhanet<br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273424">4 Sep 2015 at 12:41 am PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/questionmark.jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273424_show" class="single_comment">And it could be very interesting to see what additional forces (whirlwin, gravity) add to the resulting maze.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273424_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273424_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273424_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273424_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273424" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273424">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273424_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273424)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="replyComment" align="right"> <table id="comment273627" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/ElijahJames/1002618/">Elijah James</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273627">8 Sep 2015 at 9:36 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait.gif">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273627_show" class="single_comment">Doesn't the physics engine require multiple frames to stop the overlaps? I feel like using maths would be way better and faster.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273627_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273627_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273627_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273627_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273627" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273627">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273627_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273627)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="replyComment" align="right"> <table id="comment282978" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;">Scott Courtney<br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment282978">8 Apr 2016 at 5:00 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/questionmark.jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment282978_show" class="single_comment">Good point, but the author stipulated that level generation was happening during level loads, so presumably you'd see a loading screen (although if level layout secrecy isn't part of the game, and the player will get a full map immediately, it might be kind of fun to let the players watch this happening!).          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment282978_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment282978_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments282978_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments282978_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment282978" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="282978">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments282978_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(282978)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273411" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/PaulFurio/937624/">Paul Furio</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273411">3 Sep 2015 at 5:48 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait(2).jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273411_show" class="single_comment">Great stuff!          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273411_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273411_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273411_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273411_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273411" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273411">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273411_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273411)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273415" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/StevenAn/738861/">Steven An</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273415">3 Sep 2015 at 7:03 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait.png">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273415_show" class="single_comment">another thing you can consider for hallways, which I learned about from the Path of Exile video: use A-Star with a randomized cost field.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273415_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273415_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273415_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273415_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273415" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273415">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273415_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273415)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273445" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/RasmusRasmussen/942727/">Rasmus Rasmussen</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273445">4 Sep 2015 at 9:17 am PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait(3).jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273445_show" class="single_comment">Great read and awesome gifs. Thanks!          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273445_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273445_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273445_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273445_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273445" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273445">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273445_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273445)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273494" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/WillHendrickson/897774/">Will Hendrickson</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273494">4 Sep 2015 at 10:18 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait(4).png">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273494_show" class="single_comment">This is a really cool approach. I've marked this as one that I'll try soon (been on a procedural kick for a while now!)<br>
+<br>
+Thanks for sharing the info :)          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273494_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273494_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273494_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273494_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273494" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273494">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273494_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273494)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273518" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/GarthSmith/1002551/">Garth Smith</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273518">5 Sep 2015 at 7:22 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait(5).png">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273518_show" class="single_comment">Awesome article. Great seeing all the different ingenious ways people solve all these hard problems.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273518_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273518_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273518_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273518_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273518" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273518">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273518_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273518)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273527" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;">Fred Mitchell<br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273527">6 Sep 2015 at 8:47 am PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/questionmark.jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273527_show" class="single_comment">Excellently illustrated algorithm. I think I can come up with a clever way to disperse the rooms to eliminate collision without using a physics engine. Like for example, instead of creating them overlapped, why not create them far enough apart so they don't overlap, then contract them around a common center until they touch? You could iterate though that fairly quickly, faster than using a physics engine, I think.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273527_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273527_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273527_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273527_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273527" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273527">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273527_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273527)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273537" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/MikeHigbee/924800/">Mike Higbee</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273537">6 Sep 2015 at 8:16 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait(6).jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273537_show" class="single_comment">Would love to see this implemented on so non square or rectangular rooms for starters, great read which gives me ideas for my own projects.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273537_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273537_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273537_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273537_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273537" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273537">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273537_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273537)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273539" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;">Jordan Rehn<br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273539">7 Sep 2015 at 12:15 am PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/questionmark.jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273539_show" class="single_comment">Hey hey,<br>
+<br>
+Love the detail, was great fun implementing it myself (:  I throw in my own tweaks to really twist the knobs on the world generation; random hallway thickness, random L-bend directions, etc etc.<br>
+<br>
+However I'm failing just barley at the minimum spanning tree part... If you take a look at this:<br>
+https://www.dropbox.com/s/0a3xd2y8pbzro9r/mst_bug1.jpg?raw=1<br>
+<br>
+You'll see the Delaunay edges are correct, the MST is not.  It's not horribly off, it's just not connecting all of them... I'm using the Kruskal algorithm, I'll continue debugging it myself but if someone has an immediate awesome resource in Java by all means :)<br>
+<br>
+<br>
+EDIT<br>
+<br>
+Okay, corrected my MST implementation and I'm no longer getting oprhaned hubs, check it out!<br>
+<br>
+https://dl.dropboxusercontent.com/u/47118386/mst_bug1_fix.jpg<br>
+<br>
+My issue was assuming I was optimizing the algorithm by ignoring the mirrored side of the adjacency matrix :(          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273539_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273539_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273539_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273539_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273539" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273539">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273539_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273539)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment273564" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;">Daniel Sabelnikov<br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273564">8 Sep 2015 at 3:13 am PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/questionmark.jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273564_show" class="single_comment">The characters look like they'd been done by Paul Robertson!          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment273564_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment273564_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments273564_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments273564_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment273564" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="273564">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments273564_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(273564)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment274063" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/ErikOShaughnessy/1002847/">Erik O'Shaughnessy</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment274063">15 Sep 2015 at 2:57 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait(7).png">      </td>      <td valign="top" style="text-align:left;">         <div id="comment274063_show" class="single_comment">Thank you for the inspiring article!<br>
+<br>
+Here is my (mostly faithful) python implementation:  <br>
+<br>
+https://github.com/JnyJny/DungeonGenerator<br>
+<br>
+Writing this really stretched out some unused math / graph theory muscles!          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment274063_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment274063_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments274063_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments274063_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment274063" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="274063">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments274063_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(274063)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment276874" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;">Douglas Knapp<br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment276874">10 Nov 2015 at 3:13 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/questionmark.jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment276874_show" class="single_comment">To solve the horizontal mapping problem you have some easy options.<br>
+Make the map and cut off 1/4 the top boxes and 1/4 the bottom.<br>
+Scale in the X by 2 and shrink in the y by 2<br>
+make a few maps and then tile them but only in the x direction.<br>
+after one of these ways do your route planning for the connections.<br>
+Douglas          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment276874_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment276874_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments276874_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments276874_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment276874" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="276874">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments276874_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(276874)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment278613" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/ThomasOlsson/1002897/">Thomas Olsson</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment278613">23 Dec 2015 at 5:13 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait(8).png">      </td>      <td valign="top" style="text-align:left;">         <div id="comment278613_show" class="single_comment">Very interesting. Thanks.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment278613_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment278613_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments278613_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments278613_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment278613" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="278613">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments278613_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(278613)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment278621" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/KevinMurphy/1001884/">Kevin Murphy</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment278621">24 Dec 2015 at 3:48 am PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait(9).jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment278621_show" class="single_comment">That's a cool method! I must try. Thanks for sharing.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment278621_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment278621_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments278621_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments278621_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment278621" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="278621">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments278621_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(278621)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment278632" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;"><a href="http://www.gamasutra.com/blogs/KrisG/341262/">Kris G</a><br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment278632">25 Dec 2015 at 1:54 am PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/thumb_portrait(10).jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment278632_show" class="single_comment">I enjoyed this article.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment278632_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment278632_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments278632_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments278632_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment278632" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="278632">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments278632_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(278632)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment282979" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;">Scott Courtney<br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment282979">8 Apr 2016 at 5:10 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/questionmark.jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment282979_show" class="single_comment">Thanks for a great article, with lots of inspiration (as proved by the number of people who suggested alternative methods).<br>
+<br>
+The GIFs were extremely helpful, but may I suggest a short dwell time at the end-state of each one? That would give time for the reader to digest what they just saw before it repeats. :-)          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment282979_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment282979_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments282979_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments282979_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment282979" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="282979">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments282979_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(282979)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div class="parentComment"> <table id="comment283087" cellpadding="0" cellspacing="0" class="commentBox" border="0">   <tbody><tr>      <td colspan="2">         <hr noshade="" size="1" class="hr_comment">      </td>   </tr>   <tr>      <td style="background-color:#dcebdc; padding: 5px; text-align: left;">Bannister Nicholas<br>      </td>      <td style="background-color:#dcebdc; padding: 5px;">         <div class="date_comment"><a href="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment283087">11 Apr 2016 at 9:03 pm PST </a>         </div>      </td>   </tr></tbody></table><table cellpadding="0" cellspacing="0" border="0" class="commentBox" style="margin-bottom: 0px; margin-top:2px;">   <tbody><tr>      <td style="width: 80px; text-align: center;" valign="top">                              <img style="padding-top: 2px; padding-right: 5px; padding-bottom: 5px;" alt="profile image" src="./physics-dungeon-generation_files/questionmark.jpg">      </td>      <td valign="top" style="text-align:left;">         <div id="comment283087_show" class="single_comment">Programmatically, awesome. as all have said before me. <br>
+<br>
+Dungeon Design though, nothing new. You're falling into the same trap as early D&amp;D maps. no logic nor plot to the design. Someone "built" these Dungeons, they had specific reasons to do so, and there is rarely any logic to these "random maps" I've not once designed a dungeon without first asking "who created this and why" as my very first question. If your algorithm could follow a set of patterns based on the owner bio, the terrain being dug into.. i.e. a plan that the Dungeon Builder was hoping to stick to, but then because of some 'rock' that can't be dug through, or chasm or lava or some other impassable terrain, randomly placed before the pseudo template, then use your physics shifter to push the template 'around' that anomaly. <br>
+<br>
+Then, if you want to get some interesting maps, apply 1000 years of decay, collapse etc to random locations, have tunneling creatures dig new paths between key locations, then now you have a "random" dungeon Generator, rather than a random set of rooms that make little to no sense existing in the first place.          </div>      </td>   </tr>   <tr>      <td style="width: 80px; text-align: center;" valign="top">      </td>      <td valign="top" style="text-align:left;">         <div id="comment283087_replyLink"><div id="no_reply_button"><a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">Login to Reply or Like</a><div style="display:inline; float:right;"></div></div>         </div>         <div id="comment283087_replyForm" style="display:none;">            <div id="website_comment"><a href="javascript:void(0)" onclick="document.comments283087_like_submit.submit(); return false;">Like</a><div style="display:inline; float:right;"></div>            </div>            <form name="comments283087_reply_submit" action="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php#comment283087" method="post">               <textarea class="comment_textarea" name="comment_body" rows="8" style="width: 99%"></textarea>               <input type="hidden" name="comment_reply" value="283087">               <input type="hidden" name="comment_type" value="reply">               <a href="javascript:void(0)" onclick="trackComment(); document.comments283087_reply_submit.submit(); return false;"> Submit Reply </a> |               <a href="javascript:void(0)" onclick="cancelReplyComment(283087)">Cancel Reply</a>            </form>         </div>      </td>   </tr> </tbody></table></div><div id="no_comment_form">   <br>   <span class="comment_login">   <a href="http://www.gamasutra.com/sso/login.php?from=http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php">   <img src="./physics-dungeon-generation_files/btn_comment.gif" width="113" height="16" border="0" alt="Login to Comment"></a>   </span>   <br></div><br></div>
+                    </div>  
+        <!-- InstanceEndEditable -->
+    </div><!--end contentbox-->
+</div><!--end span-16-->
+
+            </div>
+            <br class="clear">
+	</div><!--end span-21-->
+
+        <!--begin right sidebar-->
+     	<div class="hide-phone center">
+               <div class="span-4 last">
+                   <!--right hand ads start here-->
+
+  
+                            <!-- Beginning Sync AdSlot 7 for Ad unit Gamasutra//consolepc ### size: [[160,600]]  -->
+<div id="div-gpt-ad-sky1" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-sky1');
+ </script>
+</div>
+<!-- End AdSlot 7 -->
+        <!-- Beginning Sync AdSlot 8 for Ad unit Gamasutra//consolepc ### size: [[160,160]]  -->
+<div id="div-gpt-ad-Ltile1" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-Ltile1');
+ </script>
+</div>
+<!-- End AdSlot 8 -->
+                	<!-- Beginning Sync AdSlot 12 for Ad unit Gamasutra//consolepc ### size: [[4,4]]  -->
+<div id="div-gpt-ad-custom4" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-custom4');
+ </script>
+</div>
+<!-- End AdSlot 12 -->
+              
+		 
+               	</div>
+                 </div>
+     <!--end right sidebar-->         
+        </div>
+		
+		                <!-- Beginning Sync AdSlot 17 for Ad unit Gamasutra//consolepc ### size: [[8,2]]  -->
+<div id="div-gpt-ad-native" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-native');
+ </script>
+</div>
+<!-- End AdSlot 17 -->
+        
+		
+     <!--end container-->
+     
+     <br class="clear">
+<link rel="stylesheet" type="text/css" href="./physics-dungeon-generation_files/superfooter_dark.css">
+<div align="center">
+          <!-- Beginning Sync AdSlot 6 for Ad unit Gamasutra//consolepc ### size: [[3,3]]  -->
+<div id="div-gpt-ad-ribbon" lnouo6j="" hidden="">
+ <script type="text/javascript">
+  googletag.display('div-gpt-ad-ribbon');
+ </script>
+</div>
+<!-- End AdSlot 6 -->
+</div>
+<!--begin footer-->
+<!-- BEGIN DARK FOOTER -->
+<div align="center">
+  <div class="superfooter" id="footerblack">
+    <div class="superfooter container" id="pagecenter">
+    <div id="top">
+    <!--DARK FOOTER LEFT SIDE -->
+    <div id="left">
+    <a href="http://www.ubmtechweb.com/" target="_blank"><img src="./physics-dungeon-generation_files/logo_ubmtech_white_latest.png" width="88" height="111" border="0" alt="UBM"></a>
+    </div><!-- / DARK FOOTER LEFT SIDE -->
+    <!-- DARK FOOTER rightlinks SIDE -->
+    <div class="superfooter" id="rightlinks">
+      <div class="list-div" id="tech-brands">
+        <ul class="first-list">
+          <li class="footer_title">TECHNOLOGY GROUP</li> 
+          <li><a href="http://www.blackhat.com/" target="_blank">Black Hat</a></li>
+<li><a target="_blank" href="http://contentmarketinginstitute.com/">Content Marketing Institute</a></li>
+<li><a target="_blank" href="http://www.contentmarketingworld.com/">Content Marketing World</a></li>
+          <li><a href="http://www.darkreading.com/" target="_blank">Dark Reading</a></li> 
+         
+        </ul>
+        <ul>
+          <li><a target="_blank" href="http://www.enterpriseconnect.com/">Enterprise Connect</a></li>
+          <li><a href="http://www.servicemanagementfusion.com/" target="_blank">Fusion</a></li>
+          <li><a href="http://www.gdconf.com/" target="_blank">GDC</a></li>
+           <li><a href="http://www.gamasutra.com/" target="_blank">Gamasutra</a></li>
+            </ul>
+        <ul>          
+
+          <li><a href="http://www.thinkhdi.com/" target="_blank">HDI</a></li>
+          <li><a href="http://www.icmi.com/" target="_blank">ICMI</a></li>
+          <li><a href="http://www.informationweek.com/" target="_blank">InformationWeek</a></li>
+         <li><a href="http://www.interop.com/" target="_blank">Interop ITX</a></li>
+ 
+        </ul>
+        <ul class="last-list">
+         
+          <li><a href="http://www.networkcomputing.com/" target="_blank">Network Computing</a></li>
+          <li><a href="http://www.nojitter.com/" target="_blank">No Jitter</a></li>
+<li><a href="http://www.vrdconf.com/" target="_blank">VRDC</a></li>
+        </ul>
+      </div>
+      <div class="list-div" id="communities-served">
+        <ul class="first-list">
+          <li class="footer_title">COMMUNITIES SERVED</li>
+<li><a target="_blank" href="http://tech.ubm.com/community-brands/content-marketing-2/">Content Marketing</a></li>
+
+          <li><a href="http://tech.ubm.com/community-brands/enterprise-it/" target="_blank">Enterprise IT</a></li>
+          <li><a href="http://tech.ubm.com/community-brands/enterprise-communications/" target="_blank">Enterprise Communications</a></li>
+          <li><a href="http://tech.ubm.com/community-brands/game-and-app-developers/" target="_blank">Game Development</a></li>
+          <li><a href="http://tech.ubm.com/community-brands/information-security/" target="_blank">Information Security</a></li>
+          <li><a href="http://tech.ubm.com/community-brands/technical-service-and-support/" target="_blank">IT Services &amp; Support</a></li>
+       </ul>
+      </div>
+      <div class="list-div" id="working-with-us">
+        <ul class="first-list">
+          <li class="footer_title">WORKING WITH US</li>
+          <li><a href="http://createyournextcustomer.techweb.com/contact-us/" target="_blank">Advertising Contacts</a></li>
+          <li><a href="http://events.ubm.com/?company=10" target="_blank">Event Calendar</a></li>
+          <li><a href="http://createyournextcustomer.techweb.com/" target="_blank">Tech Marketing</a></li>
+          <li><a href="http://createyournextcustomer.techweb.com/" target="_blank">Solutions</a></li>
+          <li><a href="http://tech.ubm.com/contact-us/" target="_blank">Contact Us</a></li>
+          <li><a href="http://wrightsmedia.com/sites/ubm/index.cfm" target="_blank">Licensing</a></li>
+        </ul>
+      </div>
+    </div><!-- / DARK FOOTER rightlinks -->
+  </div><!--end top-->
+    <div style="clear:both;"></div><!-- // to clear the right and left evenly // -->
+  <div id="bottom">
+    <ul class="blue">
+      <li><a href="http://legal.us.ubm.com/terms-of-service/" target="_blank" class="blue">Terms of Service</a></li>
+      <li><a href="http://legal.us.ubm.com/privacy-policy/" target="_blank" class="blue">Privacy Statement</a></li>
+      <li>Copyright © 2017 UBM, All rights reserved</li>
+    </ul>
+  </div>
+    </div>
+  </div><!-- / END footergrey -->
+</div><!-- / END align="center" -->
+<!-- / END DARK FOOTER -->
+
+<!-- Eloqua tracking code -->
+<script type="text/javascript" language="JavaScript" src="http://twimgs.com/gamasutra/js/elqtracking.js"></script>
+<!-- End Eloqua tracking code -->
+
+<script type="text/javascript" src="https://ins.techweb.com/beacon/js/beacon-min.js"></script>
+<script type="text/javascript">
+var beacon = new UBM.Beacon({environment: 'p', apiKey: '31fa8154ead6bb6b2bcefa32b0b2bd86ef990485d4def29a6117223512da2973'});
+beacon.pageview();
+</script>
+
+<script type="text/javascript" src="./physics-dungeon-generation_files/combined.js"></script>
+<script type="text/javascript" src="./physics-dungeon-generation_files/nextgen.js"></script>
+<script type="text/javascript" src="./physics-dungeon-generation_files/checkauth.js"></script>
+<script type="text/javascript" src="./physics-dungeon-generation_files/oasTrack_v1.js"></script>
+
+<!-- SiteCatalyst code version: H.21.
+Copyright 1996-2010 Adobe, Inc. All Rights Reserved
+More info available at http://www.omniture.com -->
+<script language="JavaScript" type="text/javascript" src="./physics-dungeon-generation_files/h_s_code_remote.js"></script>
+<script language="JavaScript" type="text/javascript"><!--
+    /* You may give each page an identifying name, server, and channel on
+    the next lines. */
+	s.pageName="";
+	s.server="";
+	s.channel="";
+	s.pageType="";
+	s.prop1="";
+	s.prop2="252889";
+	s.prop3="Gamasustra | 252889 | Procedural Dungeon Generation Algorithm";
+	s.prop4="Procedural Dungeon Generation Algorithm";
+	s.prop5="GAMASUTRA BLOG";
+	s.prop6="";
+	s.prop7="A Adonaac";
+	s.prop8="userAgent";
+	s.prop9="";
+	s.prop10="";
+	s.prop13="";
+	/* Conversion Variables */
+	s.campaign="";
+	s.state="";
+	s.zip="";
+	s.events="event5";
+	s.products="";
+	s.purchaseID="";
+	s.eVar1="programming,console-pc,indie";
+	s.eVar2="";
+	s.eVar3="";
+	s.eVar4="";
+	s.eVar5="";
+	/************* DO NOT ALTER ANYTHING BELOW THIS LINE ! **************/
+    var s_code = s.t(); if (s_code) document.write(s_code)//--></script>
+<script language="JavaScript" type="text/javascript"><!--
+    if (navigator.appVersion.indexOf('MSIE') >= 0) document.write(unescape('%3C') + '\!-' + '-')
+//--></script><noscript>&lt;a href="http://www.omniture.com" title="Web Analytics"&gt;&lt;img
+src="http://cmp.112.2o7.net/b/ss/cmpglobalvista/1/H.21--NS/0"
+height="1" width="1" border="0" alt="" /&gt;&lt;/a&gt;</noscript><!--/DO NOT REMOVE/-->
+<!-- End SiteCatalyst code version: H.21. -->          
+  
+<!-- Begin ADSNATIVE Code -->
+<script type="text/javascript" src="http://static.adsnative.com/static/js/render.v1.js"></script>
+<!-- End ADSNATIVE Code -->  
+
+                
+                <iframe style="display:none" id="checkAuthFrame" height="100" frameborder="0" src="./physics-dungeon-generation_files/gateway.html"></iframe><iframe id="adblock" style="display: none;" lnouo6j="" hidden="" src="./physics-dungeon-generation_files/saved_resource.html"></iframe><form target="frame_name1484105860234" action="http://tools.techweb.com/oastrack" method="POST"><input type="hidden" name="url" value="http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php"><input type="hidden" name="siteDomain" value="www.gamasutra.com"></form><iframe name="oauth2relay807133274" id="oauth2relay807133274" src="./physics-dungeon-generation_files/postmessageRelay.html" tabindex="-1" aria-hidden="true" style="width: 1px; height: 1px; position: absolute; top: -100px;"></iframe><div id="TWLightBoxOverlay" style="background: none 0px 0px repeat scroll rgb(0, 0, 0); opacity: 0.9; position: fixed; top: 0px; left: 0px; width: 100%; height: 100%; z-index: 1000; display: none;"></div><div id="TWLightBoxPanel" class="gamasutra" style="width: 780px; margin-left: -405px; margin-top: -250px; position: fixed; display: none; top: 50%; left: 50%; z-index: 6000000;"><div id="topLoginHeader"><div class="nextGenContainer_title">Techweb</div><div class="nextGenContainer_closeButton"><div id="nextGenContainer_closeButton_inner" onclick="NextGen.close();"></div></div></div><div id="nextGenLoginContainer" class=""><div id="nextGenContainer" class=""></div></div><div class="emptyFix" id="nextGenFooterContainer"></div></div></body></html>
