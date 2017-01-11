@@ -16,8 +16,8 @@ class PhysicsDungeonGenerator : DungeonGenerator {
     
     /** Box2d shit */
     val TIME_STEP = 1/45f
-    var VELOCITY_ITERATIONS = 6
-    var POSITION_ITERATIONS = 2
+    var VELOCITY_ITERATIONS = 15
+    var POSITION_ITERATIONS = 8
     
     /** Box2d body properties */
     var BODY_DENSITY = 0.2f
@@ -28,7 +28,7 @@ class PhysicsDungeonGenerator : DungeonGenerator {
     var GRAVITY = Vector2(0f, 0f)
     
     /** The number of 'bodies' to initially create. Must be equal or greater than 1 */
-    var NUM_BODIES = 15
+    var NUM_BODIES = 20
     
     /** The radius that decides where our bodies will be placed in our physics world */
     var PLACEMENT_RADIUS = 100f
@@ -75,12 +75,9 @@ class PhysicsDungeonGenerator : DungeonGenerator {
     }
     
     fun update(delta: Float) {
+        PhysicsDungeonRenderer.render(dungeon, world)
         accumulator += delta
         if(accumulator > TIME_STEP) {
-            // Render
-            PhysicsDungeonRenderer.render(dungeon, world)
-            
-            // Step
             world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS)
             accumulator -= TIME_STEP
         }
