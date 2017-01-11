@@ -1,6 +1,5 @@
 package org.badgrades.pcg.dungeon.generator.physics
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.FixtureDef
@@ -16,22 +15,30 @@ import java.util.*
 class PhysicsDungeonGenerator : DungeonGenerator {
     
     /** Box2d shit */
-    val TIME_STEP = 1/30f
+    val TIME_STEP = 1/45f
     var VELOCITY_ITERATIONS = 6
     var POSITION_ITERATIONS = 2
+    
+    var BODY_DENSITY = 0.2f
+    var BODY_FRICTION =  0f
+    var BODY_RESTITUTION = 0f
     
     /** The gravity vector for our box2d world. */
     var GRAVITY = Vector2(0f, 0f)
     
     /** The number of 'bodies' to initially create. Must be equal or greater than 1 */
-    var NUM_BODIES = 10
+    var NUM_BODIES = 15
     
     /** The radius that decides where our bodies will be placed in our physics world */
-    var PLACEMENT_RADIUS = 200f
+    var PLACEMENT_RADIUS = 100f
     
     /** Origin point for our spawn circle */
     var ORIGIN_X = 0f
     var ORIGIN_Y = 0f
+    
+    /** The min and max sizes for a given side of a room */
+    var MIN_BOX_SIZE = 10f
+    var MAX_BOX_SIZE = 55f
     
     val world: World = World(GRAVITY, true)
     val dungeon: Dungeon = Dungeon()
@@ -44,15 +51,14 @@ class PhysicsDungeonGenerator : DungeonGenerator {
             val body = world.createBody(createRectBodyDef())
     
             // Create a circle shape and set its radius to 6
-            val square = PolygonShape()
-            square.setAsBox(50f, 50f)
+            val square = randomPolygonShape()
     
             // Create a fixture definition to apply our shape to
             val fixtureDef = FixtureDef()
             fixtureDef.shape = square
-            fixtureDef.density = 0.8f
-            fixtureDef.friction = 0.4f
-            fixtureDef.restitution = 0.6f // Make it bounce a little bit
+            fixtureDef.density = BODY_DENSITY
+            fixtureDef.friction = BODY_FRICTION
+            fixtureDef.restitution = BODY_RESTITUTION
     
             // Create our fixture and attach it to the body
             body.createFixture(fixtureDef)
@@ -68,32 +74,38 @@ class PhysicsDungeonGenerator : DungeonGenerator {
     }
     
     fun update(delta: Float) {
-        Gdx.app.log("DungeonGenerator", "$delta")
-        PhysicsDungeonRenderer.render(dungeon, world)
-        
-        // Update
         accumulator += delta
         if(accumulator > TIME_STEP) {
-            Gdx.app.log("DungeonGenerator", "Physics update")
             // Render
+            PhysicsDungeonRenderer.render(dungeon, world)
+            
+            // Step
             world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS)
             accumulator -= TIME_STEP
         }
     }
     
     fun createRectBodyDef(): BodyDef {
-        
-        // First we create a body definition
         val bodyDef = BodyDef()
-        // We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
-        bodyDef.type = BodyDef.BodyType.DynamicBody
-        // Set our body's starting position in the world
         val randomSpawnPoint = randomSpawnPoint()
+        
+        bodyDef.type = BodyDef.BodyType.DynamicBody
         bodyDef.position.set(randomSpawnPoint)
         bodyDef.fixedRotation = true
         
         return bodyDef
     }
+    
+    fun randomPolygonShape(): PolygonShape {
+        val shape = PolygonShape()
+        shape.setAsBox(
+                randomPolygonSideLength(),
+                randomPolygonSideLength()
+        )
+        return shape
+    }
+    
+    fun randomPolygonSideLength() = random.nextInt((MAX_BOX_SIZE.toInt() - MIN_BOX_SIZE.toInt()) + 1) + MIN_BOX_SIZE // This is lol
     
     fun randomSpawnPoint(): Vector2 {
         val angle = random.nextDouble() * Math.PI * 2
