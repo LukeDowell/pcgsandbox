@@ -10,6 +10,8 @@ import java.util.*
 
 /**
  * http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php
+ *
+ * Separate physics logic into different class
  */
 class PhysicsDungeonGenerator : DungeonGenerator {
     
@@ -32,20 +34,20 @@ class PhysicsDungeonGenerator : DungeonGenerator {
     var GRAVITY = Vector2(0f, 0f)
     
     /** The number of 'bodies' to initially create. Must be equal or greater than 1 */
-    var NUM_BODIES = 20
+    var NUM_BODIES = 60
     
     /** The radius that decides where our bodies will be placed in our physics world */
-    var PLACEMENT_RADIUS = 100f
+    var PLACEMENT_RADIUS = 40f
     
     /** Origin point for our spawn circle */
     var ORIGIN_X = 0f
     var ORIGIN_Y = 0f
     
     /** The min and max sizes for a given side of a room */
-    var MIN_BOX_SIZE = 10f
-    var MAX_BOX_SIZE = 55f
+    var MIN_BOX_SIZE = 3f
+    var MAX_BOX_SIZE = 20f
     
-    val world: World = World(GRAVITY, true)
+    val world: World = World(GRAVITY, true) // We need doSleep to be true otherwise the dungeon will never finish generating
     val dungeon: Dungeon = Dungeon()
     val random: Random = Random()
     
@@ -120,8 +122,8 @@ class PhysicsDungeonGenerator : DungeonGenerator {
     fun randomPolygonShape(): PolygonShape {
         val shape = PolygonShape()
         shape.setAsBox(
-                randomPolygonSideLength(),
-                randomPolygonSideLength()
+                randomPolygonSideLength() * 2,
+                randomPolygonSideLength() * 2
         )
         return shape
     }
